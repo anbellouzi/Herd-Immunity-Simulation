@@ -9,7 +9,7 @@ class Logger(object):
     def __init__(self, file_name):
         # TODO:  Finish this initialization method. The file_name passed should be the
         # full file name of the file that the logs will be written to.
-        self.file_name = None
+        self.file_name = file_name
 
     def write_metadata(self, pop_size, vacc_percentage, virus_name, mortality_rate,
                        basic_repro_num):
@@ -23,6 +23,17 @@ class Logger(object):
         # the 'a' mode to append a new log to the end, since 'w' overwrites the file.
         # NOTE: Make sure to end every line with a '/n' character to ensure that each
         # event logged ends up on a separate line!
+
+        log_file = open(self.file_name,"w+")
+        log_file.write("Population size: {} \n".format(pop_size))
+        log_file.write("Vaccination percentage: {} \n".format(vacc_percentage))
+        log_file.write("Virus name: {} \n".format(virus_name))
+        log_file.write("Mortality rate: {} \n".format(mortality_rate))
+        log_file.write("Basic reproduction num: {} \n".format(basic_repro_num))
+        log_file.close()
+
+
+
         pass
 
     def log_interaction(self, person, random_person, random_person_sick=None,
@@ -38,6 +49,10 @@ class Logger(object):
         # represent all the possible edge cases. Use the values passed along with each person,
         # along with whether they are sick or vaccinated when they interact to determine
         # exactly what happened in the interaction and create a String, and write to your logfile.
+        log_interaction = open("log_interaction.txt","w+")
+        if person.infection == None:
+            
+
         pass
 
     def log_infection_survival(self, person, did_die_from_infection):
