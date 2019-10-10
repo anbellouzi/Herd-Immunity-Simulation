@@ -6,7 +6,7 @@ from virus import Virus
 class Person(object):
     ''' Person objects will populate the simulation. '''
 
-    def __init__(self, _id, is_vaccinated, virus=None, infection=None):
+    def __init__(self, _id, is_vaccinated, infection=None):
         ''' We start out with is_alive = True, because we don't make vampires or zombies.
         All other values will be set by the simulation when it makes each Person object.
         If person is chosen to be infected when the population is created, the simulation
@@ -17,27 +17,32 @@ class Person(object):
         self.is_alive = True  # boolean
         self.is_vaccinated = is_vaccinated  # boolean
         self.infection = infection  # Virus object or None
-        self.virus = virus
 
-    def did_survive_infection(self):
+    def did_survive_infection(self, damage=-1):
         ''' Generate a random number and compare to virus's mortality_rate.
         If random number is smaller, person dies from the disease.
         If Person survives, they become vaccinated and they have no infection.
         Return a boolean value indicating whether they survived the infection.
         '''
         # Only called if infection attribute is not None.
-
+        alive = True
         if not self.infection == None:
-            mortality_rate_random = random.randint(0, 100)
-            if self.virus.mortality_rate > mortality_rate_random:
-                self.is_alive = False
+            if damage == -1:
+                infection_rate = random.randint(0, 100)
             else:
-                self.is_alive = True
+                infection_rate = damage
+
+            if infection_rate < self.infection.mortality_rate:
+                alive = False
+                self.is_alive = alive
+                self.is_vaccinated = False
+            else:
+                self.is_alive = alive
                 self.is_vaccinated = True
                 self.infection = None
 
         # TODO:  Finish this method. Should return a Boolean
-        return self.is_alive
+        return alive
 
 
 
@@ -73,10 +78,10 @@ def test_sick_person_instantiation():
     assert person._id == 3
     assert person.is_alive is True
     assert person.is_vaccinated is False
-    assert person.infection is None
-    assert person.virus.name is "Dysentery"
-    assert person.virus.repro_rate == 0.7
-    assert person.virus.mortality_rate == 0.2
+    assert person.infection is virus
+    assert person.infection.name is "Dysentery"
+    assert person.infection.repro_rate == 0.7
+    assert person.infection.mortality_rate == 0.2
 
 
 
@@ -89,17 +94,15 @@ def test_did_survive_infection():
     person = Person(4, False, virus)
 
     # Resolve whether the Person survives the infection or not
+    # survived = person.did_survive_infection(0)
     survived = person.did_survive_infection()
 
     # Check if the Person survived or not
     if survived:
         assert person.is_alive is True
-        # TODO: Write your own assert statements that test
-        # the values of each attribute for a Person who survived
-        # assert ...
+        assert person.is_vaccinated is True
+        assert person.infection is None
     else:
         assert person.is_alive is False
-        # TODO: Write your own assert statements that test
-        # the values of each attribute for a Person who did not survive
-        # assert ...
-        pass
+        assert person.is_vaccinated is False
+        assert person.infection is not None
